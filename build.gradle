@@ -1,0 +1,56 @@
+plugins {
+    id "java"
+    id "maven-publish"
+    id "com.jfrog.bintray" version "1.7.3"
+}
+
+group 'pl.rebigo.libs'
+version '1.0.0.0'
+
+sourceCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
+
+configurations {
+    export
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url  "http://dl.bintray.com/rebigo/libs"
+    }
+}
+
+dependencies {
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.16.18'
+    compile group: 'org.apache.maven', name: 'maven-artifact', version: '3.3.9'
+    compile group: 'org.jprocesses', name: 'jProcesses', version: '1.6.3'
+    compile group: 'org.apache.commons', name: 'commons-exec', version: '1.3'
+    compile group: 'pl.rebigo.libs', name: 'download', version: '1.0.0.1'
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.4.0'
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-chrome-driver', version: '3.4.0'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+bintray {
+    user = 'rebigo'
+    key = System.getenv("BINTRAY_APIKEY")
+    pkg {
+        repo = 'libs'
+        name = project.getName()
+        userOrg = 'rebigo'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/rebigo/' + project.getName() + '.git'
+    }
+    publications = ['MyPublication']
+
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+        }
+    }
+}
