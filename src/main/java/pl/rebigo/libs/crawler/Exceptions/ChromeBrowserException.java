@@ -1,4 +1,4 @@
-package pl.itgolo.mod.robot.Exceptions;
+package pl.rebigo.libs.crawler.Exceptions;
 
 /**
  * Created by ITGolo on 25.02.2017.

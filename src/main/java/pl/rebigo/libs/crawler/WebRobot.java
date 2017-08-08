@@ -1,14 +1,14 @@
-package pl.itgolo.mod.robot;
+package pl.rebigo.libs.crawler;
 
 import lombok.Data;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import pl.itgolo.mod.robot.Commands.CommandClick;
-import pl.itgolo.mod.robot.Commands.CommandFindElement;
-import pl.itgolo.mod.robot.Commands.CommandNavigateTo;
-import pl.itgolo.mod.robot.Commands.CommandResize;
-import pl.itgolo.mod.robot.Exceptions.ChromeBrowserException;
+import pl.rebigo.libs.crawler.Commands.CommandClick;
+import pl.rebigo.libs.crawler.Commands.CommandFindElement;
+import pl.rebigo.libs.crawler.Commands.CommandNavigateTo;
+import pl.rebigo.libs.crawler.Commands.CommandResize;
+import pl.rebigo.libs.crawler.Exceptions.ChromeBrowserException;
 
 /**
  * IDE Editor: IntelliJ IDEA

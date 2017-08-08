@@ -1,4 +1,4 @@
-package pl.itgolo.mod.robot.Commands;
+package pl.rebigo.libs.crawler.Commands;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;

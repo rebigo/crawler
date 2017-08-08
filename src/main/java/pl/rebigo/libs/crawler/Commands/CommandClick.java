@@ -1,10 +1,10 @@
-package pl.itgolo.mod.robot.Commands;
+package pl.rebigo.libs.crawler.Commands;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import pl.itgolo.mod.robot.Exceptions.ChromeBrowserException;
+import pl.rebigo.libs.crawler.Exceptions.ChromeBrowserException;
 
 import java.util.List;
 import java.util.Objects;

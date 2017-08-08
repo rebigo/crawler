@@ -1,4 +1,4 @@
-package pl.itgolo.mod.robot;
+package pl.rebigo.libs.crawler;
 
 import org.apache.commons.io.IOUtils;
 import org.jutils.jprocesses.JProcesses;

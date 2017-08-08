@@ -1,10 +1,10 @@
-package pl.itgolo.mod.robot;
+package pl.rebigo.libs.crawler;
 
 import lombok.Data;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import pl.itgolo.mod.robot.Exceptions.ChromeBrowserException;
+import pl.rebigo.libs.crawler.Exceptions.ChromeBrowserException;
 
 import java.io.File;
 

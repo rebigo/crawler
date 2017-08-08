@@ -1,9 +1,9 @@
-package pl.itgolo.mod.robot.Commands;
+package pl.rebigo.libs.crawler.Commands;
 
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
-import pl.itgolo.mod.robot.Exceptions.ChromeBrowserException;
-import pl.itgolo.mod.robot.GlobalSettings;
+import pl.rebigo.libs.crawler.Exceptions.ChromeBrowserException;
+import pl.rebigo.libs.crawler.GlobalSettings;
 
 /**
  * IDE Editor: IntelliJ IDEA

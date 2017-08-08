@@ -1,8 +1,8 @@
-package pl.itgolo.mod.robot;
+package pl.rebigo.libs.crawler;
 
 import org.junit.Assert;
 import org.junit.Test;
-import pl.itgolo.mod.robot.Exceptions.ChromeBrowserException;
+import pl.rebigo.libs.crawler.Exceptions.ChromeBrowserException;
 
 /**
  * IDE Editor: IntelliJ IDEA

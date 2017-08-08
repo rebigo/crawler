@@ -1,4 +1,4 @@
-package pl.itgolo.mod.robot;
+package pl.rebigo.libs.crawler;
 
 import lombok.Data;
 

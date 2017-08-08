@@ -1,12 +1,12 @@
-package pl.itgolo.mod.robot;
+package pl.rebigo.libs.crawler;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jutils.jprocesses.JProcesses;
 import org.jutils.jprocesses.model.ProcessInfo;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import pl.itgolo.mod.robot.Exceptions.ChromeBrowserException;
-import pl.itgolo.mod.robot.Services.AdmissibleSystem;
+import pl.rebigo.libs.crawler.Exceptions.ChromeBrowserException;
+import pl.rebigo.libs.crawler.Services.AdmissibleSystem;
 import pl.rebigo.libs.download.Download;
 
 import java.io.File;

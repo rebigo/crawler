@@ -1,4 +1,4 @@
-package pl.itgolo.mod.robot.Services;
+package pl.rebigo.libs.crawler.Services;
 
 /**
  * IDE Editor: IntelliJ IDEA
