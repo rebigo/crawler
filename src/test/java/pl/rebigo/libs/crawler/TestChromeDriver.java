@@ -17,7 +17,7 @@ public class TestChromeDriver {
 
     @Test
     public void test_chrome_driver() throws ChromeBrowserException, InterruptedException {
-        //ChromeBrowser.validateAllOrDownload();
+        ChromeBrowser.validateAllOrDownload();
         GlobalSettings.hideChromeBrowser = false;
         WebRobot webRobot = new WebRobot();
         webRobot.runNavigateTo("https://www.youtube.com/watch?v=TrDlBPrzvd8&list=RDqa-MpSReuZk&index=11&autoplay=1");
