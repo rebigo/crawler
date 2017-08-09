@@ -1,14 +1,20 @@
 package pl.rebigo.libs.crawler.Exceptions;
 
 /**
- * Created by ITGolo on 25.02.2017.
+ * IDE Editor: IntelliJ IDEA
+ * <p>
+ * Date: 27.07.2017
+ * Time: 09:27
+ * Project name: crawler
+ *
+ * @author Karol Golec <karol.rebigo@gmail.com>
  */
-public class ChromeBrowserException extends Exception {
+public class CrawlerException extends Exception {
 
     /**
      * Constructor
      */
-    public ChromeBrowserException() {
+    public CrawlerException() {
 
     }
 
@@ -16,7 +22,7 @@ public class ChromeBrowserException extends Exception {
      * Constructor
      * @param message message exception
      */
-    public ChromeBrowserException(String message) {
+    public CrawlerException(String message) {
         super (message);
     }
 
@@ -25,7 +31,7 @@ public class ChromeBrowserException extends Exception {
      * Constructor
      * @param cause cause exception
      */
-    public ChromeBrowserException(Throwable cause) {
+    public CrawlerException(Throwable cause) {
         super (cause);
     }
 
@@ -34,7 +40,7 @@ public class ChromeBrowserException extends Exception {
      * @param message message exception
      * @param cause cause exception
      */
-    public ChromeBrowserException(String message, Throwable cause) {
+    public CrawlerException(String message, Throwable cause) {
         super (message, cause);
     }
 }

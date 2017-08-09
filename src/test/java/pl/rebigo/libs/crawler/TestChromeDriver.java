@@ -2,7 +2,10 @@ package pl.rebigo.libs.crawler;
 
 import org.junit.Assert;
 import org.junit.Test;
-import pl.rebigo.libs.crawler.Exceptions.ChromeBrowserException;
+import org.openqa.selenium.By;
+import pl.rebigo.libs.crawler.Exceptions.CrawlerException;
+import pl.rebigo.libs.crawler.Factories.Chrome.ChromeBrowser;
+import pl.rebigo.libs.crawler.Factories.Chrome.ChromeDriverBinary;
 
 /**
  * IDE Editor: IntelliJ IDEA
@@ -16,29 +19,48 @@ import pl.rebigo.libs.crawler.Exceptions.ChromeBrowserException;
 public class TestChromeDriver {
 
     @Test
-    public void test_chrome_driver() throws ChromeBrowserException, InterruptedException {
+    public void test_chrome_driver() throws Exception {
         ChromeBrowser.validateAllOrDownload();
-        GlobalSettings.hideChromeBrowser = false;
+        CrawlerSettings.chromeHideBrowser = false;
         WebRobot webRobot = new WebRobot();
-        webRobot.runNavigateTo("https://www.youtube.com/watch?v=TrDlBPrzvd8&list=RDqa-MpSReuZk&index=11&autoplay=1");
+        webRobot.startNavigateTo("https://www.youtube.com/watch?v=TrDlBPrzvd8&list=RDqa-MpSReuZk&index=11&autoplay=1");
         Assert.assertNotNull(webRobot.getWebDriver().getTitle());
-        //webRobot.close();
-        Thread.sleep(100000);
+        webRobot.close();
     }
 
     @Test
-    public void test_chrome_driver_for_user() throws ChromeBrowserException {
-//        GlobalSettings.hideChromeBrowser = false;
-//        WebRobot webRobot = new WebRobot("Klikanie");
-//        webRobot.runNavigateTo("http://google.pl");
-//        Assert.assertNotNull(webRobot.getWebDriver().getTitle());
-        //webRobot.close();
+    public void test_screenshot() throws Exception {
+        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "trace");
+        CrawlerSettings.chromeHideBrowser = false;
+        WebRobot webRobot = new WebRobot();
+        webRobot.startNavigateTo("http://google.pl/");
+        webRobot.screenshot("temp");
+        webRobot.close();
+    }
+
+    @Test
+    public void test_functions_crawler() throws CrawlerException {
+        WebRobot webRobot = new WebRobot();
+        webRobot.startNavigateTo("http://google.pl/");
+        webRobot.screenshot("temp");
+        webRobot.screenshot(By.className("class"), "temp");
+        webRobot.startResize(1024, 600);
+        webRobot.startFindElement(By.cssSelector("element"), 2000, 100);
+    }
+
+    @Test
+    public void test_chrome_driver_for_user() throws CrawlerException {
+        CrawlerSettings.chromeHideBrowser = false;
+        WebRobot webRobot = new WebRobot("Klikanie");
+        webRobot.startNavigateTo("http://google.pl");
+        Assert.assertNotNull(webRobot.getWebDriver().getTitle());
+        webRobot.close();
     }
 
     @Test
     public void test_validate_chrome_browser(){
-        //GlobalSettings.portableMode = false;
-        //GlobalSettings.hideChromeBrowser = false;
+        CrawlerSettings.chromePortableMode = false;
+        CrawlerSettings.chromeHideBrowser = false;
         ChromeBrowser.validateAllOrDownload();
     }
 

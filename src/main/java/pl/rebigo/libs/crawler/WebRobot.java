@@ -1,14 +1,14 @@
 package pl.rebigo.libs.crawler;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import pl.rebigo.libs.crawler.Commands.CommandClick;
-import pl.rebigo.libs.crawler.Commands.CommandFindElement;
-import pl.rebigo.libs.crawler.Commands.CommandNavigateTo;
-import pl.rebigo.libs.crawler.Commands.CommandResize;
-import pl.rebigo.libs.crawler.Exceptions.ChromeBrowserException;
+import pl.rebigo.libs.crawler.Exceptions.CrawlerException;
+import pl.rebigo.libs.crawler.Factories.IWebRobotFactory;
+import pl.rebigo.libs.crawler.Factories.WebRobotChromeFactory;
+import pl.rebigo.libs.crawler.Operations.*;
 
 /**
  * IDE Editor: IntelliJ IDEA
@@ -20,22 +20,26 @@ import pl.rebigo.libs.crawler.Exceptions.ChromeBrowserException;
  * @author Karol Golec <karolgolec@itgolo.pl>
  */
 @Data
+@Slf4j
 public class WebRobot {
 
     /* @var creator web robot */
-    private CreatorWebRobot creatorWebRobot;
+    private IWebRobotFactory webRobotFactory;
 
     /* @var Command navigate to */
-    private CommandNavigateTo commandNavigateTo;
+    private NavigateTo navigateTo;
 
     /* @var Command resize */
-    private CommandResize commandResize;
+    private Resize resize;
 
     /* @var click */
-    private CommandClick commandClick;
+    private Click click;
 
     /* @var find element */
-    private CommandFindElement commandFindElement;
+    private FindElement findElement;
+
+    /* @var screenshot */
+    private Screenshot screenshot;
 
     /* @var web driver */
     private WebDriver webDriver;
@@ -43,36 +47,38 @@ public class WebRobot {
     /**
      * Constructor
      *
-     * @throws ChromeBrowserException error chrome driver
+     * @throws CrawlerException error chrome driver
      */
-    public WebRobot() throws ChromeBrowserException {
-        this.creatorWebRobot = new CreatorWebRobot();
-        loadInstance();
+    public WebRobot() throws CrawlerException {
+        this.webRobotFactory = new WebRobotChromeFactory();
+        commonsCreateInstance();
     }
 
     /**
      * Constructor
      *
-     * @param userName user name
-     * @throws ChromeBrowserException error chrome driver
+     * @param user user
+     * @throws CrawlerException error chrome driver
      */
-    public WebRobot(String userName) throws ChromeBrowserException {
-        this.creatorWebRobot = new CreatorWebRobot(userName);
-        loadInstance();
+    public WebRobot(String user) throws CrawlerException {
+        this.webRobotFactory = new WebRobotChromeFactory(user);
+        commonsCreateInstance();
     }
 
     /**
-     * Load instance
+     * Commons with create instance
      *
-     * @throws ChromeBrowserException error chrome driver
+     * @throws CrawlerException error chrome driver
      */
-    public void loadInstance() throws ChromeBrowserException {
-        this.webDriver = this.creatorWebRobot.getWebDriver();
-        this.commandNavigateTo = new CommandNavigateTo();
-        this.commandResize = new CommandResize();
-        this.commandClick = new CommandClick();
-        this.commandFindElement = new CommandFindElement();
-        this.runResize(GlobalSettings.defaultWidth, GlobalSettings.defaultHeight);
+    public void commonsCreateInstance() throws CrawlerException {
+        log.debug("Create web robot.");
+        this.webDriver = this.webRobotFactory.getWebDriver();
+        this.navigateTo = new NavigateTo();
+        this.resize = new Resize();
+        this.click = new Click();
+        this.findElement = new FindElement();
+        this.screenshot = new Screenshot();
+        this.startResize(CrawlerSettings.defaultWidth, CrawlerSettings.defaultHeight);
     }
 
     /**
@@ -81,16 +87,17 @@ public class WebRobot {
     public void close() {
         this.webDriver.close();
         this.webDriver.quit();
+        log.debug("Call to close web driver.");
     }
 
     /**
      * Navigate to
      *
      * @param url url
-     * @throws ChromeBrowserException error navigate to
+     * @throws CrawlerException error navigate to
      */
-    public void runNavigateTo(String url) throws ChromeBrowserException {
-        this.commandNavigateTo.run(url, this.webDriver, 30);
+    public void startNavigateTo(String url) throws CrawlerException {
+        this.navigateTo.start(url, this.webDriver, 30);
     }
 
     /**
@@ -98,10 +105,10 @@ public class WebRobot {
      *
      * @param width  width
      * @param height height
-     * @throws ChromeBrowserException error navigate to
+     * @throws CrawlerException error resize
      */
-    public void runResize(Integer width, Integer height) throws ChromeBrowserException {
-        this.commandResize.run(width, height, this.webDriver);
+    public void startResize(Integer width, Integer height) throws CrawlerException {
+        this.resize.start(width, height, this.webDriver);
     }
 
     /**
@@ -109,21 +116,42 @@ public class WebRobot {
      *
      * @param locator    locator
      * @param javascript java script
-     * @throws ChromeBrowserException error navigate to
+     * @throws CrawlerException error click
      */
-    public void runClick(By locator, Boolean javascript) throws ChromeBrowserException {
-        this.commandClick.run(locator, javascript, this.webDriver);
+    public void startClick(By locator, Boolean javascript) throws CrawlerException {
+        this.click.start(locator, javascript, this.webDriver);
     }
 
     /**
      * Find element
      *
      * @param locator      web element
-     * @param waitTimeout  wait timeout
+     * @param timeoutMSec  wait timeout in milliseconds
      * @param pollingEvery polling every
      * @return web element or null
      */
-    public WebElement runFindElement(By locator, Integer waitTimeout, Integer pollingEvery) {
-        return this.commandFindElement.run(locator, waitTimeout, pollingEvery, this.webDriver);
+    public WebElement startFindElement(By locator, Integer timeoutMSec, Integer pollingEvery) {
+        return this.findElement.start(locator, timeoutMSec, pollingEvery, this.webDriver);
+    }
+
+    /**
+     * Screenshot
+     *
+     * @param pathSave  path save
+     * @return web element or null
+     */
+    public void screenshot(String pathSave) throws CrawlerException {
+        this.screenshot.start(pathSave, this.webDriver);
+    }
+
+    /**
+     * Screenshot
+     *
+     * @param locator   web element
+     * @param pathSave  path save
+     * @return web element or null
+     */
+    public void screenshot(By locator, String pathSave) throws CrawlerException {
+        this.screenshot.start(locator, pathSave, this.webDriver);
     }
 }

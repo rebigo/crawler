@@ -1,12 +1,14 @@
-package pl.rebigo.libs.crawler;
+package pl.rebigo.libs.crawler.Factories.Chrome;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.jutils.jprocesses.JProcesses;
 import org.jutils.jprocesses.model.ProcessInfo;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import pl.rebigo.libs.crawler.Exceptions.ChromeBrowserException;
-import pl.rebigo.libs.crawler.Services.AdmissibleSystem;
+import pl.rebigo.libs.crawler.CrawlerSettings;
+import pl.rebigo.libs.crawler.Services.ValidateSystem;
+import pl.rebigo.libs.crawler.WebRobot;
 import pl.rebigo.libs.download.Download;
 
 import java.io.File;
@@ -27,25 +29,26 @@ import java.util.zip.ZipFile;
  *
  * @author Karol Golec <karolgolec@itgolo.pl>
  */
+@Slf4j
 public class ChromeBrowser {
 
     /* @var temp path zip with chrome driver */
-    private static final String PATH_ZIP_PORTABLE = "temp/GoogleChromePortableBeta.zip";
+    private static final String PATH_TEMP_ZIP_PORTABLE = "temp/GoogleChromePortableBeta.zip";
 
     /**
-     * Check exist chrome browser
+     * Check can start chrome browser
      *
      * @return true if exist
      */
-    public static Boolean exist() {
+    public static Boolean canStart() {
         try {
             WebRobot webRobot = new WebRobot();
-            webRobot.runNavigateTo(GlobalSettings.urlTest);
+            webRobot.startNavigateTo(CrawlerSettings.urlTest);
             webRobot.close();
-            System.out.println("DEBUG: Exist chrome browser.");
+            log.debug(String.format("Chrome browser can start."));
             return true;
-        } catch (ChromeBrowserException e) {
-            System.out.println("WARNING: Not exist chrome browser.");
+        } catch (Exception e) {
+            log.debug(String.format("Can't start chrome browser.", e));
         }
         return false;
     }
@@ -56,20 +59,20 @@ public class ChromeBrowser {
      * @return true if success
      */
     public static Boolean validateAllOrDownload() {
-        if (AdmissibleSystem.isAdmissible()) {
+        if (ValidateSystem.validate()) {
             if (ChromeDriverBinary.existOrInstall()) {
                 if (ChromeBrowser.validateOrSwitch()) {
                     if (ChromeBrowser.validateVersion()) {
-                        System.out.println("DEBUG: Chrome browser is OK.");
+                        log.debug(String.format("Chrome browser is ready."));
                         return true;
                     } else {
-                        GlobalSettings.portableMode = true;
+                        CrawlerSettings.chromePortableMode = true;
                         ChromeBrowser.destroyProcesses();
                         ChromeDriverBinary.destroyProcesses();
                         if (forceDownloadPortable()){
                             if (ChromeBrowser.validateVersion()){
-                                System.out.println("DEBUG: Download new version and switch to chrome browser in portable mode.");
-                                System.out.println("DEBUG: Chrome browser is OK.");
+                                log.debug(String.format("Download new version and switch to chrome browser in portable mode."));
+                                log.debug(String.format("Chrome browser is ready."));
                                 return true;
                             }
                         }
@@ -89,20 +92,19 @@ public class ChromeBrowser {
         Boolean validate = false;
         try {
             WebRobot webRobot = new WebRobot();
-            webRobot.runNavigateTo(GlobalSettings.urlTest);
+            webRobot.startNavigateTo(CrawlerSettings.urlTest);
             String currentVersion = ((RemoteWebDriver) webRobot.getWebDriver()).getCapabilities().getVersion();
-            DefaultArtifactVersion minVersion = new DefaultArtifactVersion(GlobalSettings.minVersionChromeBrowser);
+            DefaultArtifactVersion minVersion = new DefaultArtifactVersion(CrawlerSettings.chromeMinVersion);
             DefaultArtifactVersion version = new DefaultArtifactVersion(currentVersion);
-            if (version.compareTo(minVersion) >= 0) {
+            if (version.compareTo(minVersion) >= 0)
                 validate = true;
-            } else {
-                System.out.println("WARNING: This version chrome browser is old.");
-            }
+            else
+                log.error(String.format("This version chrome browser is old."));
             webRobot.close();
-            System.out.println("DEBUG: Current version chrome browser: " + currentVersion);
+            log.debug(String.format("Current version chrome browser: %1$s.", currentVersion));
             return validate;
-        } catch (ChromeBrowserException e) {
-            System.out.println("ERROR: Validate version chrome browser.");
+        } catch (Exception e) {
+            log.error(String.format("Failed validate version chrome browser.", e));
         }
         return false;
     }
@@ -113,16 +115,13 @@ public class ChromeBrowser {
      * @return true if exist
      */
     public static Boolean existPortable() {
-        Boolean exist = false;
-        if (new File(GlobalSettings.pathBinaryPortable).canExecute()) {
-            System.out.println("DEBUG: Exist GoogleChromePortable.exe");
-            exist = ChromeBrowser.exist();
+        if (new File(CrawlerSettings.chromePathBinaryPortableExe).canExecute()) {
+            log.debug(String.format("Exist GoogleChromePortable.exe"));
+            return ChromeBrowser.canStart();
         } else {
-            System.out.println("DEBUG: Not exist GoogleChromePortable.exe");
-            exist = false;
-
+            log.error(String.format("Not exist GoogleChromePortable.exe"));
+            return false;
         }
-        return exist;
     }
 
     /**
@@ -132,9 +131,9 @@ public class ChromeBrowser {
      */
     public static Boolean downloadPortable() {
         // TODO: Zmienić serwer przeglądarki chrome z tymczasowego na stały
-        System.out.println("DEBUG: Download chrome browser portable.");
-        if (Download.download(GlobalSettings.urlChromeBrowserPortable, PATH_ZIP_PORTABLE)) {
-            System.out.println("DEBUG: Success download chrome portable.");
+        log.debug(String.format("Download chrome browser portable."));
+        if (Download.download(CrawlerSettings.chromePortableUrlResourceZip, PATH_TEMP_ZIP_PORTABLE)) {
+            log.debug(String.format("Success download chrome portable."));
             return true;
         }
         return false;
@@ -147,14 +146,14 @@ public class ChromeBrowser {
      */
     public static Boolean unzip() {
         Boolean success = false;
-        System.out.println("DEBUG: Unzip GoogleChromePortableBeta.zip");
+        log.debug(String.format("Unzip GoogleChromePortableBeta.zip"));
         try {
-            File tmp = new File(PATH_ZIP_PORTABLE);
+            File tmp = new File(PATH_TEMP_ZIP_PORTABLE);
             ZipFile zipFile = new ZipFile(tmp);
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                String dirDest = new File(GlobalSettings.pathBinaryPortable).getParent();
+                String dirDest = new File(CrawlerSettings.chromePathBinaryPortableExe).getParent();
                 File entryDestination = new File(dirDest, entry.getName());
                 if (entry.isDirectory()) {
                     entryDestination.mkdirs();
@@ -169,9 +168,9 @@ public class ChromeBrowser {
             }
             zipFile.close();
             success = true;
-            System.out.println("DEBUG: Success unzip GoogleChromePortableBeta.zip");
+            log.debug(String.format("Success unzip GoogleChromePortableBeta.zip"));
         } catch (Exception e) {
-            System.out.println("Error: Failed unzip GoogleChromePortableBeta.zip");
+            log.error(String.format("Failed unzip GoogleChromePortableBeta.zip"), e);
         }
         return success;
     }
@@ -182,20 +181,20 @@ public class ChromeBrowser {
      * @return true if success
      */
     public static Boolean validateOrSwitch() {
-        System.out.println("DEBUG: Validate chrome browser.");
+        log.debug(String.format("Validate chrome browser."));
         Boolean validated = false;
-        validated = GlobalSettings.portableMode && existOrDownloadPortable();
+        validated = CrawlerSettings.chromePortableMode && existOrDownloadPortable();
         if (validated == false) {
-            validated = ChromeBrowser.exist();
+            validated = ChromeBrowser.canStart();
             if (validated == false) {
-                GlobalSettings.portableMode = true;
-                validated = ChromeBrowser.exist();
+                CrawlerSettings.chromePortableMode = true;
+                validated = ChromeBrowser.canStart();
                 if (validated == false) {
                     existOrDownloadPortable();
-                    validated = ChromeBrowser.exist();
+                    validated = ChromeBrowser.canStart();
                 }
                 if (validated)
-                    System.out.println("DEBUG: Switch to exist chrome browser in portable mode.");
+                    log.debug(String.format("Switch to exist chrome browser in portable mode."));
             }
         }
         return validated;
@@ -227,9 +226,9 @@ public class ChromeBrowser {
             } else {
                 exist = true;
             }
-            System.out.println("DEBUG: Exist browser chrome in portable mode.");
+            log.debug(String.format("Exist browser chrome in portable mode."));
         } catch (Exception e) {
-            System.out.println("Error: Failed check exist or download portable chrome browser.");
+            log.error(String.format("Failed check exist or download portable chrome browser."), e);
         }
         return exist;
     }
@@ -245,7 +244,6 @@ public class ChromeBrowser {
             return true;
         Boolean destroyed = false;
         for (final ProcessInfo processInfo : processesList) {
-            System.out.println(processInfo.getPid());
             Boolean success = JProcesses.killProcess(Integer.parseInt(processInfo.getPid())).isSuccess();
             if (success)
                 destroyed = true;
