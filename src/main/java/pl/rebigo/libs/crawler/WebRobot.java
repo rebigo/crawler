@@ -9,6 +9,10 @@ import pl.rebigo.libs.crawler.Exceptions.CrawlerException;
 import pl.rebigo.libs.crawler.Factories.IWebRobotFactory;
 import pl.rebigo.libs.crawler.Factories.WebRobotChromeFactory;
 import pl.rebigo.libs.crawler.Operations.*;
+import pl.rebigo.libs.crawler.Operations.Enums.OperationFill;
+import pl.rebigo.libs.crawler.Operations.Enums.OperationSelectDropDown;
+
+import java.util.List;
 
 /**
  * IDE Editor: IntelliJ IDEA
@@ -38,8 +42,20 @@ public class WebRobot {
     /* @var find element */
     private FindElement findElement;
 
+    /* @var find elements */
+    private FindElements findElements;
+
     /* @var screenshot */
     private Screenshot screenshot;
+
+    /* @var click and reload */
+    private ClickReload clickReload;
+
+    /* @var fill element */
+    private Fill fill;
+
+    /* @var select drop down */
+    private SelectDropDown selectDropDown;
 
     /* @var web driver */
     private WebDriver webDriver;
@@ -77,7 +93,11 @@ public class WebRobot {
         this.resize = new Resize();
         this.click = new Click();
         this.findElement = new FindElement();
+        this.findElements = new FindElements();
         this.screenshot = new Screenshot();
+        this.clickReload = new ClickReload();
+        this.fill = new Fill();
+        this.selectDropDown = new SelectDropDown();
         this.startResize(CrawlerSettings.defaultWidth, CrawlerSettings.defaultHeight);
     }
 
@@ -135,23 +155,75 @@ public class WebRobot {
     }
 
     /**
+     * Find elements
+     *
+     * @param locator      web element
+     * @param timeoutMSec  wait timeout in milliseconds
+     * @param pollingEvery polling every
+     * @return web elements or null
+     */
+    public List<WebElement> startFindElements(By locator, Integer timeoutMSec, Integer pollingEvery) {
+        return this.findElements.start(locator, timeoutMSec, pollingEvery, this.webDriver);
+    }
+
+    /**
      * Screenshot
      *
-     * @param pathSave  path save
+     * @param pathSave path save
      * @return web element or null
      */
-    public void screenshot(String pathSave) throws CrawlerException {
+    public void startScreenshot(String pathSave) throws CrawlerException {
         this.screenshot.start(pathSave, this.webDriver);
     }
 
     /**
      * Screenshot
      *
-     * @param locator   web element
-     * @param pathSave  path save
+     * @param locator  web element
+     * @param pathSave path save
      * @return web element or null
      */
-    public void screenshot(By locator, String pathSave) throws CrawlerException {
+    public void startScreenshot(By locator, String pathSave) throws CrawlerException {
         this.screenshot.start(locator, pathSave, this.webDriver);
+    }
+
+    /**
+     * Click in element and wait for reload
+     *
+     * @param locator      locator
+     * @param javascript   click by java script
+     * @param timeoutMSec  timeout in milliseconds
+     * @param pollingEvery pooling every
+     * @param webDriver    web driver
+     * @throws CrawlerException failed reloaded or click
+     */
+    public void startClickReload(By locator, Boolean javascript, Integer timeoutMSec, Integer pollingEvery, WebDriver webDriver) throws CrawlerException {
+        this.clickReload.start(locator, javascript, timeoutMSec, pollingEvery, this.webDriver);
+    }
+
+    /**
+     * Fill element
+     *
+     * @param locator         web element
+     * @param text            text
+     * @param operationFill   method fill
+     * @param attempts        attempts fill element
+     * @param intervalAttempt interval attempt
+     * @throws CrawlerException failed fill
+     */
+    public void startFill(By locator, String text, OperationFill operationFill, Integer attempts, Integer intervalAttempt) throws CrawlerException {
+        this.fill.start(locator, text, operationFill, attempts, intervalAttempt, this.webDriver);
+    }
+
+    /**
+     * Select option in drop down
+     *
+     * @param locator                 web element
+     * @param value                   value
+     * @param operationSelectDropDown method select drop down
+     * @throws CrawlerException failed select drop down
+     */
+    public void startSelectDropDown(By locator, String value, OperationSelectDropDown operationSelectDropDown) throws CrawlerException {
+        this.selectDropDown.start(locator, value, operationSelectDropDown, this.webDriver);
     }
 }

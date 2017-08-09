@@ -49,32 +49,79 @@ WebRobot webRobot = new WebRobot("MyUser");
 
 
 ## Functions
+
+#### Navigate to web site
 ```
-WebRobot webRobot = new WebRobot();
-
-// navigate to site
 webRobot.startNavigateTo("http://google.pl/");
+```
 
+#### Screenshots
+```
 // scrennshot full site
 webRobot.screenshot("temp");
 
 // screnshot element in site
 webRobot.screenshot(By.className("class"), "temp");
+```
 
-// resize browser window
+#### Resize browser window
+```
 webRobot.startResize(1024, 600);
+```
 
-// click to element
+#### Click to web element
+```
 // second argument:
-// false - by webElement.click()
-// true - by java script
+//      false - by webElement.click()
+//      true - by java script
 webRobot.startClick(By.cssSelector("button"), true);
+```
 
-// Find first element
+#### Find first web element
+```
 // second argument: timeout for ajax load element
 // third argument: interval check exist element (for ajax element)
-webRobot.startFindElement(By.cssSelector("element"), 2000, 100);
+webRobot.startFindElement(By.cssSelector(".element"), 2000, 100);
 ```
+
+#### Find web elements
+```
+// second argument: timeout for ajax load element
+// third argument: interval check exist element (for ajax element)
+webRobot.startFindElements(By.cssSelector(".element"), 2000, 100);
+```
+
+#### Click to element and wait for reload
+```
+// second argument:
+//      false - by webElement.click()
+//      true - by java script
+// third argument: timeout for reload web site
+// fourth argument: interval check reloaded web site
+ webRobot.startClickReload(By.xpath("//div"), false, 40000, 100, webRobot.getWebDriver());
+```
+
+#### Fill text to web element
+```
+// second argument: text to fill
+// third argument: Method fill
+//      - by java script
+//      - by send keys to element
+//      - by send keys to textarea (long text)
+// fourth argument: attempts fill
+// fifth argument: interval attempt fill
+webRobot.startFill(By.cssSelector(".gsfi"), "Example text", OperationFill.JAVASCRIPT, 2, 100);
+```
+
+#### Select drop down
+```
+// second argument: value option
+// third argument: type value
+//      - select by value attribute of optional
+//      - select by text of optional
+webRobot.startSelectDropDown(By.xpath("//select[@class='js-states form-control']"), "Nevada", OperationSelectDropDown.SELECT_BY_TEXT);
+```
+
 
 ## Settings
 All settings of crawler exist in `CrawlerSettings` class.
